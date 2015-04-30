@@ -123,17 +123,42 @@ object FSM {
   private final val SomeMaxFiniteDuration = Some(Long.MaxValue.nanos)
 
   /**
+   * INTERNAL API
+   * Using a subclass for binary compatibility reasons
+   */
+  private[akka] class SilentState[S, D](_stateName: S, _stateData: D, _timeout: Option[FiniteDuration], _stopReason: Option[Reason], _replies: List[Any])
+    extends State[S, D](_stateName, _stateData, _timeout, _stopReason, _replies) {
+
+    /**
+     * INTERNAL API
+     */
+    private[akka] override def notifies: Boolean = false
+
+    /**
+     * INTERNAL API
+     */
+    private[akka] override def copy2(stateName: S = stateName, stateData: D = stateData, timeout: Option[FiniteDuration] = timeout, stopReason: Option[Reason] = stopReason, replies: List[Any] = replies): State[S, D] = {
+      new SilentState(stateName, stateData, timeout, stopReason, replies)
+    }
+  }
+
+  /**
    * This captures all of the managed state of the [[akka.actor.FSM]]: the state
    * name, the state data, possibly custom timeout, stop reason and replies
    * accumulated while processing the last message.
    */
-  final case class State[S, D](stateName: S, stateData: D, timeout: Option[FiniteDuration] = None, stopReason: Option[Reason] = None, replies: List[Any] = Nil)(private[akka] val notifies: Boolean = true) {
+  case class State[S, D](stateName: S, stateData: D, timeout: Option[FiniteDuration] = None, stopReason: Option[Reason] = None, replies: List[Any] = Nil) {
 
     /**
-     * Copy object and update values if needed.
+     * INTERNAL API
      */
-    private[akka] def copy(stateName: S = stateName, stateData: D = stateData, timeout: Option[FiniteDuration] = timeout, stopReason: Option[Reason] = stopReason, replies: List[Any] = replies, notifies: Boolean = notifies): State[S, D] = {
-      State(stateName, stateData, timeout, stopReason, replies)(notifies)
+    private[akka] def notifies: Boolean = true
+
+    /**
+     * INTERNAL API
+     */
+    private[akka] def copy2(stateName: S = stateName, stateData: D = stateData, timeout: Option[FiniteDuration] = timeout, stopReason: Option[Reason] = stopReason, replies: List[Any] = replies): State[S, D] = {
+      new State(stateName, stateData, timeout, stopReason, replies)
     }
 
     /**
@@ -144,9 +169,9 @@ object FSM {
      * Use Duration.Inf to deactivate an existing timeout.
      */
     def forMax(timeout: Duration): State[S, D] = timeout match {
-      case f: FiniteDuration ⇒ copy(timeout = Some(f))
-      case Duration.Inf      ⇒ copy(timeout = SomeMaxFiniteDuration) // we map the Infinite duration to a special marker,
-      case _                 ⇒ copy(timeout = None) // that means "cancel stateTimeout". This marker is needed
+      case f: FiniteDuration ⇒ copy2(timeout = Some(f))
+      case Duration.Inf      ⇒ copy2(timeout = SomeMaxFiniteDuration) // we map the Infinite duration to a special marker,
+      case _                 ⇒ copy2(timeout = None) // that means "cancel stateTimeout". This marker is needed
     } // so we do not have to break source/binary compat.
     // TODO: Can be removed once we can break State#timeout signature to `Option[Duration]`
 
@@ -156,7 +181,7 @@ object FSM {
      * @return this state transition descriptor
      */
     def replying(replyValue: Any): State[S, D] = {
-      copy(replies = replyValue :: replies)
+      copy2(replies = replyValue :: replies)
     }
 
     /**
@@ -164,18 +189,24 @@ object FSM {
      * set when transitioning to the new state.
      */
     def using(@deprecatedName('nextStateDate) nextStateData: D): State[S, D] = {
-      copy(stateData = nextStateData)
+      copy2(stateData = nextStateData)
     }
 
     /**
      * INTERNAL API.
      */
     private[akka] def withStopReason(reason: Reason): State[S, D] = {
-      copy(stopReason = Some(reason))
+      copy2(stopReason = Some(reason))
     }
 
+    /**
+     * INTERNAL API.
+     */
     private[akka] def withNotification(notifies: Boolean): State[S, D] = {
-      copy(notifies = notifies)
+      if (notifies)
+        State(stateName, stateData, timeout, stopReason, replies)
+      else
+        new SilentState(stateName, stateData, timeout, stopReason, replies)
     }
   }
 
@@ -329,7 +360,7 @@ trait FSM[S, D] extends Actor with Listeners with ActorLogging {
    * @param timeout state timeout for the initial state, overriding the default timeout for that state
    */
   final def startWith(stateName: S, stateData: D, timeout: Timeout = None): Unit =
-    currentState = FSM.State(stateName, stateData, timeout)()
+    currentState = FSM.State(stateName, stateData, timeout)
 
   /**
    * Produce transition to other state.
@@ -341,7 +372,7 @@ trait FSM[S, D] extends Actor with Listeners with ActorLogging {
    * @param nextStateName state designator for the next state
    * @return state transition descriptor
    */
-  final def goto(nextStateName: S): State = FSM.State(nextStateName, currentState.stateData)()
+  final def goto(nextStateName: S): State = FSM.State(nextStateName, currentState.stateData)
 
   /**
    * Produce "empty" transition descriptor.
