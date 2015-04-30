@@ -4,6 +4,9 @@
 package akka.io
 
 import java.nio.channels.{ DatagramChannel, SocketChannel, ServerSocketChannel }
+import java.net.DatagramSocket
+import java.net.ServerSocket
+import java.net.Socket
 
 object Inet {
 
@@ -45,6 +48,23 @@ object Inet {
      * the slave socket for servers).
      */
     def afterConnect(c: SocketChannel): Unit = ()
+
+    @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+    def beforeDatagramBind(ds: DatagramSocket): Unit = ()
+
+    @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+    def beforeServerSocketBind(ss: ServerSocket): Unit = ()
+
+    @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+    def beforeConnect(s: Socket): Unit = ()
+
+    @deprecated("Use afterConnect with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+    def afterConnect(s: Socket): Unit = ()
+
+  }
+
+  trait SocketChannelOption extends SocketOption {
+
   }
 
   /**
@@ -79,6 +99,15 @@ object Inet {
       override def beforeBind(c: ServerSocketChannel): Unit = c.socket.setReceiveBufferSize(size)
       override def beforeBind(c: DatagramChannel): Unit = c.socket.setReceiveBufferSize(size)
       override def beforeBind(c: SocketChannel): Unit = c.socket.setReceiveBufferSize(size)
+
+      @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def beforeServerSocketBind(s: ServerSocket): Unit = s.setReceiveBufferSize(size)
+
+      @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def beforeDatagramBind(s: DatagramSocket): Unit = s.setReceiveBufferSize(size)
+
+      @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def beforeConnect(s: Socket): Unit = s.setReceiveBufferSize(size)
     }
 
     // server socket options
@@ -92,6 +121,15 @@ object Inet {
       override def beforeBind(c: ServerSocketChannel): Unit = c.socket.setReuseAddress(on)
       override def beforeBind(c: DatagramChannel): Unit = c.socket.setReuseAddress(on)
       override def beforeBind(c: SocketChannel): Unit = c.socket.setReuseAddress(on)
+
+      @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def beforeServerSocketBind(s: ServerSocket): Unit = s.setReuseAddress(on)
+
+      @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def beforeDatagramBind(s: DatagramSocket): Unit = s.setReuseAddress(on)
+
+      @deprecated("Use beforeBind with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def beforeConnect(s: Socket): Unit = s.setReuseAddress(on)
     }
 
     /**
@@ -103,6 +141,9 @@ object Inet {
       require(size > 0, "SendBufferSize must be > 0")
       override def afterConnect(c: DatagramChannel): Unit = c.socket.setSendBufferSize(size)
       override def afterConnect(c: SocketChannel): Unit = c.socket.setSendBufferSize(size)
+
+      @deprecated("Use afterConnect with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def afterConnect(s: Socket): Unit = s.setSendBufferSize(size)
     }
 
     /**
@@ -116,6 +157,9 @@ object Inet {
       require(0 <= tc && tc <= 255, "TrafficClass needs to be in the interval [0, 255]")
       override def afterConnect(c: DatagramChannel): Unit = c.socket.setTrafficClass(tc)
       override def afterConnect(c: SocketChannel): Unit = c.socket.setTrafficClass(tc)
+
+      @deprecated("Use afterConnect with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def afterConnect(s: Socket): Unit = s.setTrafficClass(tc)
     }
 
   }

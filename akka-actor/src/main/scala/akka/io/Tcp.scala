@@ -59,6 +59,9 @@ object Tcp extends ExtensionId[TcpExt] with ExtensionIdProvider {
      */
     final case class KeepAlive(on: Boolean) extends SocketOption {
       override def afterConnect(c: SocketChannel): Unit = c.socket.setKeepAlive(on)
+
+      @deprecated("Use afterConnect with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def afterConnect(s: Socket): Unit = s.setKeepAlive(on)
     }
 
     /**
@@ -70,6 +73,9 @@ object Tcp extends ExtensionId[TcpExt] with ExtensionIdProvider {
      */
     final case class OOBInline(on: Boolean) extends SocketOption {
       override def afterConnect(c: SocketChannel): Unit = c.socket.setOOBInline(on)
+
+      @deprecated("Use afterConnect with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def afterConnect(s: Socket): Unit = s.setOOBInline(on)
     }
 
     // SO_LINGER is handled by the Close code
@@ -84,6 +90,9 @@ object Tcp extends ExtensionId[TcpExt] with ExtensionIdProvider {
      */
     final case class TcpNoDelay(on: Boolean) extends SocketOption {
       override def afterConnect(c: SocketChannel): Unit = c.socket.setTcpNoDelay(on)
+
+      @deprecated("Use afterConnect with ServerSocketChannel or DatagramChannel parameter instead", "2.4")
+      override def afterConnect(s: Socket): Unit = s.setTcpNoDelay(on)
     }
 
   }

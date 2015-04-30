@@ -88,7 +88,7 @@ trait BaseSerializer extends Serializer {
    *
    * See [[Serializer#identifier()]].
    */
-  final override val identifier: Int =
+  override val identifier: Int =
     system.settings.config.getInt(s"""${SerializationIdentifiers}."${getClass.getName}"""")
 }
 
