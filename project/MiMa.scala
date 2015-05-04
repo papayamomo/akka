@@ -132,6 +132,8 @@ object MiMa extends AutoPlugin {
       ProblemFilters.exclude[MissingClassProblem]("akka.actor.UntypedActorFactory"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.util.Timeout.longToTimeout"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.util.Timeout.intToTimeout"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.util.Timeout.apply"),
+      ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.util.Timeout.this"),
       FilterAnyProblem("akka.routing.ConsistentHashingRouter"),
       ProblemFilters.exclude[MissingClassProblem]("akka.routing.SmallestMailboxRouter$"),
       ProblemFilters.exclude[MissingClassProblem]("akka.routing.RouterRoutees$"),
