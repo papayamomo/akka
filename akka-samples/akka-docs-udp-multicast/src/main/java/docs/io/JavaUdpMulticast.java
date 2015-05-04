@@ -34,7 +34,7 @@ public class JavaUdpMulticast {
     //#inet6-protocol-family
 
     //#multicast-group
-    public static class MulticastGroup extends Inet.AbstractSocketOption {
+    public static class MulticastGroup extends Inet.AbstractAfterChannelConnect {
         private String address;
         private String interf;
 

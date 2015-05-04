@@ -63,25 +63,6 @@ Which turns out to be useful in many systems where same-state transitions actual
 
 In case you do *not* want to trigger a state transition event when effectively performing an ``X->X`` transition, use ``stay()`` instead.
 
-More control over Channel properties in Akka-IO
-===============================================
-Method signatures for ``SocketOption`` have been changed to take a channel instead of a socket. The channel's socket
-can be retrieved by calling ``channel.socket``. This allows for accessing new NIO features in Java 7.
-
-========================================  =====================================
-                 2.3                                      2.4
-========================================  =====================================
-``beforeDatagramBind(DatagramSocket)``    ``beforeBind(DatagramChannel)``
-``beforeServerSocketBind(ServerSocket)``  ``beforeBind(ServerSocketChannel)``
-``beforeConnect(Socket)``                 ``beforeBind(SocketChannel)``
-\                                         ``afterConnect(DatagramChannel)``
-\                                         ``afterConnect(ServerSocketChannel)``
-``afterConnect(Socket)``                  ``afterConnect(SocketChannel)``
-========================================  =====================================
-
-A new class ``DatagramChannelCreator`` which extends ``SocketOption`` has been added. ``DatagramChannelCreator`` can be used for
-custom ``DatagramChannel`` creation logic. This allows for opening IPv6 multicast datagram channels.
-
 Cluster Sharding Entry Path Change
 ==================================
 Previously in ``2.3.x`` entries were direct children of the local ``ShardRegion``. In examples the ``persistenceId`` of entries

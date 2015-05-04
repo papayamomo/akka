@@ -8,7 +8,7 @@ import java.net.{InetAddress, InetSocketAddress, NetworkInterface, StandardProto
 import java.nio.channels.DatagramChannel
 
 import akka.actor.{Actor, ActorLogging, ActorRef}
-import akka.io.Inet.{DatagramChannelCreator, SocketOption}
+import akka.io.Inet.{DatagramChannelCreator, SocketOption, AfterChannelConnect}
 import akka.io.{IO, Udp}
 import akka.util.ByteString
 
@@ -20,7 +20,7 @@ final case class Inet6ProtocolFamily() extends DatagramChannelCreator {
 //#inet6-protocol-family
 
 //#multicast-group
-final case class MulticastGroup(address: String, interface: String) extends SocketOption {
+final case class MulticastGroup(address: String, interface: String) extends AfterChannelConnect {
   override def afterConnect(c: DatagramChannel) {
     val group = InetAddress.getByName(address)
     val networkInterface = NetworkInterface.getByName(interface)

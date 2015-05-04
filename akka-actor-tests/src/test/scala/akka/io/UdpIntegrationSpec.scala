@@ -11,6 +11,7 @@ import akka.actor.ActorRef
 import akka.io.Udp._
 import akka.io.Inet._
 import akka.testkit.SocketUtil._
+import java.net.DatagramSocket
 
 class UdpIntegrationSpec extends AkkaSpec("""
     akka.loglevel = INFO
@@ -106,13 +107,13 @@ class UdpIntegrationSpec extends AkkaSpec("""
 private case class AssertBeforeBind() extends SocketOption {
   var beforeCalled = 0
 
-  override def beforeBind(c: DatagramChannel) = {
-    assert(!c.socket.isBound)
+  override def beforeDatagramBind(ds: DatagramSocket): Unit = {
+    assert(!ds.isBound)
     beforeCalled += 1
   }
 }
 
-private case class AssertAfterConnect() extends SocketOption {
+private case class AssertAfterConnect() extends AfterChannelConnect {
   var afterCalled = 0
 
   override def afterConnect(c: DatagramChannel) = {
