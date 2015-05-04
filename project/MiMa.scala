@@ -205,6 +205,7 @@ object MiMa extends AutoPlugin {
       // the type hierarchy of class akka.actor.RootActorPath has changed in new version. Missing types {akka.actor.ActorPath}
       ProblemFilters.exclude[MissingTypesProblem]("akka.actor.RootActorPath"),
       // declaration of trait akka.actor.ActorPath has changed to class akka.actor.ActorPath in new version; changing trait to class breaks client code
+      ProblemFilters.exclude[IncompatibleTemplateDefProblem]("akka.actor.ActorPath"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.actor.LocalActorRefProvider.terminationPromise"),
       ProblemFilters.exclude[MissingClassProblem]("akka.actor.UntypedActorFactoryConsumer"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.actor.FSM#State.copy"),
@@ -217,6 +218,8 @@ object MiMa extends AutoPlugin {
       ProblemFilters.exclude[MissingMethodProblem]("akka.event.Logging#LogEvent.getMDC"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.util.ByteString.byteStringCompanion"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.util.ByteString.writeToOutputStream"),
+      //method boss()akka.actor.RepointableActorRef in class akka.actor.ActorDSL#Extension does not have a correspondent in new version
+      ProblemFilters.exclude[MissingMethodProblem]("akka.actor.ActorDSL#Extension.boss"),
       FilterAnyProblem("akka.remote.EndpointManager"),
       FilterAnyProblem("akka.remote.RemoteTransport"),
       FilterAnyProblem("akka.remote.Remoting"),
