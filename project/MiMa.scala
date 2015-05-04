@@ -212,6 +212,8 @@ object MiMa extends AutoPlugin {
       FilterAnyProblem("akka.pattern.PromiseActorRef"),
       FilterAnyProblem("akka.actor.ActorSystemImpl$TerminationCallbacks"),
       ProblemFilters.exclude[MissingMethodProblem]("akka.event.Logging#LogEvent.getMDC"),
+      ProblemFilters.exclude[MissingMethodProblem]("akka.util.ByteString.byteStringCompanion"),
+      ProblemFilters.exclude[MissingMethodProblem]("akka.util.ByteString.writeToOutputStream"),
       FilterAnyProblem("akka.remote.EndpointManager"),
       FilterAnyProblem("akka.remote.RemoteTransport"),
       FilterAnyProblem("akka.remote.Remoting"),
