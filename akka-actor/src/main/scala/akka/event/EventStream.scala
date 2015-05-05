@@ -84,13 +84,15 @@ class EventStream(sys: ActorSystem, private val debug: Boolean) extends LoggingB
    * INTERNAL API
    */
   @tailrec
-  final private[akka] def initUnsubscriber(unsubscriber: ActorRef): Unit = {
+  final private[akka] def initUnsubscriber(unsubscriber: ActorRef): Boolean = {
     // sys may be null for backwards compatibility reasons
-    if (sys ne null) initiallySubscribedOrUnsubscriber.get match {
+    if (sys eq null) false
+    else initiallySubscribedOrUnsubscriber.get match {
       case value @ Left(subscribers) ⇒
         if (initiallySubscribedOrUnsubscriber.compareAndSet(value, Right(unsubscriber))) {
           if (debug) publish(Logging.Debug(simpleName(this), this.getClass, "initialized unsubscriber to: " + unsubscriber + ", registering " + subscribers.size + " initial subscribers with it"))
           subscribers foreach registerWithUnsubscriber
+          true
         } else {
           // recurse, because either new subscribers have been registered since `get` (retry Left case),
           // or another thread has succeeded in setting it's unsubscriber (end on Right case)
@@ -99,6 +101,7 @@ class EventStream(sys: ActorSystem, private val debug: Boolean) extends LoggingB
 
       case Right(presentUnsubscriber) ⇒
         if (debug) publish(Logging.Debug(simpleName(this), this.getClass, s"not using unsubscriber $unsubscriber, because already initialized with $presentUnsubscriber"))
+        false
     }
   }
 
