@@ -127,6 +127,15 @@ object MiMa extends AutoPlugin {
       // final case classes
       IgnoreFinalClassProblem, 
       
+      // changed to static method, source compatible is enough
+      ProblemFilters.exclude[MissingMethodProblem]("akka.testkit.JavaTestKit.shutdownActorSystem"),
+      // testActorName()java.lang.String in trait akka.testkit.TestKitBase does not have a correspondent in old version
+      ProblemFilters.exclude[MissingMethodProblem]("akka.testkit.TestKitBase.testActorName"),
+      // method remainingOrDefault()scala.concurrent.duration.FiniteDuration in trait akka.testkit.TestKitBase does not have a correspondent in old version
+      ProblemFilters.exclude[MissingMethodProblem]("akka.testkit.TestKitBase.remainingOrDefault"),
+      // synthetic method akka$remote$testkit$MultiNodeSpec$Replacement$$$outer()akka.remote.testkit.MultiNodeSpec in class akka.remote.testkit.MultiNodeSpec#Replacement does not have a correspondent in new version
+      ProblemFilters.exclude[MissingMethodProblem]("akka.remote.testkit.MultiNodeSpec#Replacement.akka$remote$testkit$MultiNodeSpec$Replacement$$$outer"),
+      
       
       // removed deprecated
       ProblemFilters.exclude[MissingClassProblem]("akka.actor.UntypedActorFactory"),
@@ -194,6 +203,7 @@ object MiMa extends AutoPlugin {
       ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.cluster.routing.ClusterRouterGroupSettings.this"),
       // deprecated method this(Int,java.lang.String,Boolean,scala.Option)Unit in class akka.cluster.routing.ClusterRouterGroupSettings does not have a correspondent with same parameter signature among (Int,java.lang.Iterable,Boolean,java.lang.String)Unit, (Int,scala.collection.immutable.Seq,Boolean,scala.Option)Unit
       ProblemFilters.exclude[IncompatibleMethTypeProblem]("akka.cluster.routing.ClusterRouterGroupSettings.this"),
+      ProblemFilters.exclude[MissingMethodProblem]("akka.testkit.TestKit.dilated"),
       
       
       // changed internals
