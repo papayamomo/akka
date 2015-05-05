@@ -135,7 +135,11 @@ object MiMa extends AutoPlugin {
       ProblemFilters.exclude[MissingMethodProblem]("akka.testkit.TestKitBase.remainingOrDefault"),
       // synthetic method akka$remote$testkit$MultiNodeSpec$Replacement$$$outer()akka.remote.testkit.MultiNodeSpec in class akka.remote.testkit.MultiNodeSpec#Replacement does not have a correspondent in new version
       ProblemFilters.exclude[MissingMethodProblem]("akka.remote.testkit.MultiNodeSpec#Replacement.akka$remote$testkit$MultiNodeSpec$Replacement$$$outer"),
+
       
+      // method nrOfInstances(akka.actor.ActorSystem)Int in trait akka.routing.Pool does not have a correspondent in old version
+      // ok to exclude, since we don't call nrOfInstances(sys) for old implementations
+      ProblemFilters.exclude[MissingMethodProblem]("akka.routing.Pool.nrOfInstances"),
       
       // removed deprecated
       ProblemFilters.exclude[MissingClassProblem]("akka.actor.UntypedActorFactory"),
@@ -153,10 +157,6 @@ object MiMa extends AutoPlugin {
       ProblemFilters.exclude[MissingClassProblem]("akka.routing.RandomRouter"),
       // class akka.routing.CollectRouteeRefs does not have a correspondent in new version
       ProblemFilters.exclude[MissingClassProblem]("akka.routing.CollectRouteeRefs"),
-      // method nrOfInstances()Int in trait akka.routing.Pool does not have a correspondent in new version
-      ProblemFilters.exclude[MissingMethodProblem]("akka.routing.Pool.nrOfInstances"),
-      // method nrOfInstances(akka.actor.ActorSystem)Int in trait akka.routing.Pool does not have a correspondent in old version
-      ProblemFilters.exclude[MissingMethodProblem]("akka.routing.Pool.nrOfInstances"),
       // class akka.routing.ConsistentActorRef does not have a correspondent in new version
       ProblemFilters.exclude[MissingClassProblem]("akka.routing.ConsistentActorRef"),
       // object akka.routing.ConsistentActorRef does not have a correspondent in new version
