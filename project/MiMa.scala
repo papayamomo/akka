@@ -220,6 +220,9 @@ object MiMa extends AutoPlugin {
       ProblemFilters.exclude[MissingMethodProblem]("akka.util.ByteString.writeToOutputStream"),
       //method boss()akka.actor.RepointableActorRef in class akka.actor.ActorDSL#Extension does not have a correspondent in new version
       ProblemFilters.exclude[MissingMethodProblem]("akka.actor.ActorDSL#Extension.boss"),
+      // method hasSubscriptions(java.lang.Object)Boolean in trait akka.event.SubchannelClassification does not have a correspondent in old version
+      // ok to exclude since it is only invoked from new EventStreamUnsubscriber
+      ProblemFilters.exclude[MissingMethodProblem]("akka.event.SubchannelClassification.hasSubscriptions"),
       FilterAnyProblem("akka.remote.EndpointManager"),
       FilterAnyProblem("akka.remote.RemoteTransport"),
       FilterAnyProblem("akka.remote.Remoting"),
