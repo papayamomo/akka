@@ -89,21 +89,22 @@ private[akka] trait BatchingExecutor extends Executor {
         parentBlockContext = prevBlockContext
         try processBatch(this) catch {
           case t: Throwable ⇒
+            parentBlockContext = null
             resubmitUnbatched()
             throw t
-        } finally {
-          _tasksLocal.remove()
-          parentBlockContext = null
-        }
+        } finally _tasksLocal.remove()
+        parentBlockContext = null
       }
     }
 
     override def blockOn[T](thunk: ⇒ T)(implicit permission: CanAwait): T = {
+      // need to rescue the parent BC before re-running this Batch
+      val parent = parentBlockContext
+      parentBlockContext = null
       // if we know there will be blocking, we don't want to keep tasks queued up because it could deadlock.
       resubmitUnbatched()
       // now delegate the blocking to the previous BC
-      require(parentBlockContext ne null)
-      parentBlockContext.blockOn(thunk)
+      parent.blockOn(thunk)
     }
   }
 
